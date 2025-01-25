@@ -1,44 +1,57 @@
 # SomeMON - Pokémon Battle Simulator
 
-SomeMON é um simulador de batalhas inspirado em Pokémon, permitindo que você crie e interaja com ataques baseados em tipos, resistência, fraqueza e imunidade, com uma lógica realista de combate.
+SomeMON is a battle simulator inspired by Pokémon, allowing you to create and interact with attacks based on types, resistance, weakness, and immunity, with realistic combat logic.
 
-## Funcionalidades
+## Features
 
-- **Tipos e Interações:** Cada tipo de ataque e Pokémon tem suas resistências, fraquezas e imunidades, que afetam o dano durante as batalhas.
-- **Ataques Personalizados:** Crie ataques com diferentes tipos, potências e precisões.
-- **Cálculo de Dano Realista:** O dano varia dependendo das resistências e fraquezas do tipo alvo.
-- **Simulação de Combate:** A mecânica de combate é simulada com base nas interações de tipos, efeitos de ataque e muito mais.
+- **Types and Interactions:** Each type of attack and Pokémon has its resistances, weaknesses, and immunities, which affect the damage during battles.
+- **Custom Attacks:** Create attacks with different types, powers, and accuracies.
+- **Realistic Damage Calculation:** Damage varies depending on the resistances and weaknesses of the target type.
+- **Battle Simulation:** The combat mechanics are simulated based on type interactions, attack effects, and much more.
 
-## Estrutura do Projeto
+## Project Structure
 
-Este projeto é estruturado da seguinte forma:
+This project is structured as follows:
 ```
-someMON/
+SomeMON - Pokémon Battle Simulator/
 └─ src/
-   ├─ Mon
-   │  ├─ Attack 
-   │  │  └── attack.py # Definição da classe Attack, com a mecânica de combate
-   │  ├─ Type 
-   │  │  ├── type.py # Definição da classe Type, contendo os tipos de ataques e Pokémon
-   │  │  └── type_chart.json # Arquivo JSON contendo o gráfico de resistências, fraquezas e imunidades
-   │  └── mon.py # Definição da classe de MON que terá as mecânicas de interação
-   └── README.md # Documentação do projeto
+    ├─ core/
+    │  └── entities/
+    │     ├── attack.py # Definition of the Attack class, with combat mechanics
+    │     ├── mon.py # Definition of the MON class that will have the interaction mechanics
+    │     └── type.py # Definition of the Type class, containing the types of attacks and Pokémon 
+    ├─ data/
+    │  └── type_chart.json # JSON file containing the chart of resistances, weaknesses, and immunities
+    ├─ main.py # Edit and run this file to start the battles
+    └── README.md # Project documentation
 ```
 
-## Como Rodar
+## How to Run
 
-### Pré-requisitos
+### Prerequisites
 
-Este projeto requer Python 3.7+.
+This project requires Python 3.7+.
 
-1. Clone este repositório:
+1. Clone this repository:
 
-   ```bash
-   git clone https://github.com/usuario/someMON.git
-   cd someMON
-   ```
-
-3. Para rodar o código, execute o seguinte comando:
     ```bash
-    python -m src.attack
+    git clone https://github.com/user/someMON.git
+    cd someMON
     ```
+
+2. To run the code, execute the following command:
+    ```bash
+    python -m src.main
+    ```
+
+## Contributing
+
+Contributions are welcome! Please fork this repository and submit a pull request for any enhancements or bug fixes.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any inquiries or feedback, please contact [gbotareli@gmail.com](mailto:gbotareli@gmail.com).

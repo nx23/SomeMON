@@ -1,7 +1,10 @@
+from __future__ import annotations
 from math import ceil
-from typing import Optional
-from src.Mon.Attack import Attack
-from src.Mon.Type import Type
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from src.core.entities.attack import Attack
+    from src.core.entities.type import Type
 
 
 class Mon:
@@ -9,7 +12,7 @@ class Mon:
     MAX_STAT = 255
     MIN_STAT = 1
     
-    def __init__(self, name: str, species: str, hp: int, atk: int, df: int, satk: int, sdf: int, spd: int, main_type: Type, sub_type: Optional[Type]=None, attacks: Optional[list[Attack]]=None):
+    def __init__(self, species: str, hp: int, atk: int, df: int, satk: int, sdf: int, spd: int, main_type: Type, sub_type: Optional[Type]=None, attacks: Optional[list[Attack]]=None, name: Optional[str]=None):
         self.__name = name or species
         self.__species = species
         self.__stats = {}
@@ -17,12 +20,12 @@ class Mon:
         self.__sub_type = sub_type
         self.__attacks = []
 
-        # Validação e inicialização de stats
+        # Validation and initialization of stats
         for stat_name, value in {"hp": hp, "atk": atk, "df": df, "satk": satk, "sdf": sdf, "spd": spd}.items():
             self._check_for_valid_stat(value, stat_name)
             self.__stats[stat_name] = value
 
-        # HP máximo e atual
+        # Maximum and current HP
         self.__max_hp = self._calculate_max_hp(self.__stats["hp"])
         self.__current_hp = self.__max_hp
 
@@ -31,11 +34,12 @@ class Mon:
                 self.add_attack(attack)
 
     def __str__(self):
-        type_info = f"{self.main_type}{'/' + self.sub_type if self.sub_type else ''}"
-        attacks = ", ".join(attack.name for attack in self.attacks) or "Nenhum ataque"
+        type_info = f"{self.main_type.name}{'/' + self.sub_type.name if self.sub_type else ''}"
+        attacks = ", ".join(attack.name for attack in self.attacks) or "No attacks"
         return (f"{self.name} ({self.species}) - Type: {type_info}, "
                 f"HP: {self.current_hp}/{self.max_hp}, ATK: {self.atk}, DF: {self.df}, "
-                f"SPD: {self.spd}, Attacks: {attacks}")
+                f"SATK: {self.satk}, SDEF: {self.sdf} SPD: {self.spd}, "
+                f"Known Attacks: {attacks}")
 
     @property
     def name(self) -> str:
@@ -55,32 +59,41 @@ class Mon:
 
     @property
     def current_hp(self) -> int:
-        """Retorna o status HP"""
+        """Returns the current HP"""
         return self.__current_hp
 
     @property
     def max_hp(self) -> int:
-        """Retorna o HP máximo do Mon"""
+        """Returns the maximum HP"""
         return self.__max_hp
 
     @current_hp.setter
     def current_hp(self, value: int):
-        """Retorna o HP atual do Mon"""
+        """Sets the current HP"""
         if value < 0:
-            raise ValueError("O valor de HP não pode ser menor que 0")
+            raise ValueError("HP value cannot be less than 0")
         if value > self.max_hp:
-            raise ValueError(f"HP atual não pode exceder o máximo ({self.max_hp})")
+            raise ValueError(f"Current HP cannot exceed the maximum ({self.max_hp})")
         self.__current_hp = value
 
     @property
     def hp(self) -> int:
-        """Retorna o status HP"""
+        """Returns the HP stat"""
         return self.__stats["hp"]
 
     @hp.setter
     def hp(self, value: int):
         self._check_for_valid_stat(value, "HP")
         self.__stats["hp"] = value
+
+    @property
+    def atk(self) -> int:
+        return self.__stats["atk"]
+    
+    @atk.setter
+    def atk(self, value: int):
+        self._check_for_valid_stat(value, "ATK")
+        self.__stats["atk"] = value
 
     @property
     def df(self) -> int:
@@ -119,36 +132,35 @@ class Mon:
         self.__stats["spd"] = value
 
     @property
-    def main_type(self) -> str:
-        return self.__main_type.name
+    def main_type(self) -> Type:
+        return self.__main_type
     
     @property
-    def sub_type(self) -> Optional[str]:
-        return self.__sub_type.name if self.__sub_type else None
+    def sub_type(self) -> Optional[Type]:
+        return self.__sub_type
     
     @property
     def attacks(self) -> list[Attack]:
-        """Retorna os ataques que o Mon conhece"""
+        """Returns the attacks known by the Mon"""
         return list(self.__attacks)
 
     def _calculate_max_hp(self, base_hp: int) -> int:
         return ceil(base_hp * 1.5)
 
-    def attack(self, target: "Mon", attack: Attack):
+    def attack(self, target: Mon, attack: Attack):
         """
-        Realiza um ataque contra outro Mon.
+        Performs an attack on another Mon.
         Args:
-            target (Mon): O Mon que será atacado.
-            attack (Attack): O ataque que será usado.
+            target (Mon): The Mon being attacked.
+            attack (Attack): The attack being used.
         """
+        print(f"{self.name} is attacking {target.name}!")
+
         if attack not in self.attacks:
             raise ValueError(f"{self.name} does not know {attack.name}")
         
-        damage = attack.calculate_damage(self, target, attack)
+        attack.calculate_damage(self, target)
 
-        # Aplica o dano ao HP do alvo
-        target.current_hp = max(target.current_hp - damage, 0)
-        print(f"{self.name} usou {attack.name} e causou {damage} de dano em {target.name}!")
 
     def _check_valid_type(self, type_name: str):
         Type._check_for_valid_type(type_name)
@@ -159,11 +171,15 @@ class Mon:
         if not Mon.MIN_STAT <= stat <= Mon.MAX_STAT:
             raise ValueError(f"{name} must be between {Mon.MIN_STAT} and {Mon.MAX_STAT}")
         
-    def _check_for_valid_attack(self, attack): 
+    def _check_for_valid_attack(self, attack: Attack):
+        if not TYPE_CHECKING:
+            from src.core.entities.attack import Attack
         if not isinstance(attack, Attack):
             raise TypeError("Attack must be an instance of the Attack class")
         
     def add_attack(self, attack: Attack):
+        if not TYPE_CHECKING:
+            from src.core.entities.attack import Attack
         if attack in self.__attacks:
             raise ValueError(f"Attack '{attack.name}' is already added to {self.name}")
         if len(self.__attacks) >= Mon.MAX_ATTACKS:

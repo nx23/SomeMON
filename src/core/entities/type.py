@@ -1,5 +1,5 @@
 import json
-import os
+from pathlib import Path
 
 
 class Type:
@@ -8,11 +8,11 @@ class Type:
     def __init__(self, name: str):
         self.__name = name
 
-        # Verificando se o type_chart foi carregado antes de usar
+        # Check if the type_chart has been loaded before using it
         if Type._type_chart is None:
             raise ValueError("The type chart has not been loaded. Call 'load_type_chart' first.")
 
-        # Usando o _get_interactions para pegar os nomes dos tipos, não as instâncias
+        # Use _get_interactions to get the names of the types, not the instances
         self.__resistances = tuple(Type._get_interactions(name=self.__name, interaction_type="resistances"))
         self.__weaknesses = tuple(Type._get_interactions(name=self.__name, interaction_type="weaknesses"))
         self.__immunities = tuple(Type._get_interactions(name=self.__name, interaction_type="immunities"))
@@ -56,7 +56,7 @@ class Type:
 
     @classmethod
     def _check_for_valid_type(cls, type_name: str):
-        """Verifica se o nome do tipo está presente no type_chart."""
+        """Check if the type name is present in the type_chart."""
         if not isinstance(type_name, str) or not type_name:
             raise TypeError(f"{type_name} must be a non-empty string")
         
@@ -65,29 +65,34 @@ class Type:
 
     @classmethod
     def _get_interactions(cls, name: str, interaction_type: str) -> list[str]:
-        """Obtém as interações (resistências, fraquezas, imunidades) do type_chart"""
+        """Get the interactions (resistances, weaknesses, immunities) from the type_chart"""
         return cls._type_chart.get(name, {}).get(interaction_type, [])
 
     @classmethod
-    def load_type_chart(cls, file_name: str) -> None:
-        """Carrega o type_chart a partir de um arquivo JSON e o armazena como um atributo de classe"""
-        if cls._type_chart is None:  # Garantir que vai carregar o type_chart apenas uma vez
-            script_dir = os.path.dirname(__file__)
-            file_path = os.path.join(script_dir, file_name)
+    def load_type_chart(cls, file_name: str = "type_chart.json") -> None:
+        """Load the type_chart from a JSON file and store it as a class attribute"""
+        if cls._type_chart is None:  # Ensure that the type_chart is loaded only once
+            project_root = Path(__file__).resolve().parents[3]  # Project root directory
+            file_path = project_root / 'src' / 'data' / file_name
             
-            with open(file_path, "r") as f:
-                cls._type_chart = json.load(f)
+            try:
+                with file_path.open("r") as f:
+                    cls._type_chart = json.load(f)
+            except FileNotFoundError:
+                raise FileNotFoundError(f"The file {file_name} does not exist at {file_path}.")
+            except IOError as e:
+                raise IOError(f"An error occurred while trying to read the file {file_name}: {e}")
 
 
 if __name__ == "__main__":
-    # Carregando o type_chart uma vez (compartilhado por todas as instâncias)
+    # Loading the type_chart once (shared by all instances)
     Type.load_type_chart("type_chart.json")
 
-    # Criando instâncias de tipos (tanto de Pokémon quanto de Ataques)
+    # Creating instances of types (both Pokémon and Attacks)
     fire = Type("Fire")
     water = Type("Water")
 
-    # Acessando resistências, fraquezas e imunidades
+    # Accessing resistances, weaknesses, and immunities
     print(f"Resistances of Fire: {fire.resistances}")
     print(f"Weaknesses of Fire: {fire.weaknesses}")
     print(f"Immunities of Fire: {fire.immunities}")
@@ -96,6 +101,6 @@ if __name__ == "__main__":
     print(f"Weaknesses of Water: {water.weaknesses}")
     print(f"Immunities of Water: {water.immunities}")
 
-    # Exemplo de comparação
+    # Example of comparison
     print(f"Fire == Water? {fire == water}")
     print(f"Fire in set? {'Fire' in {fire}}")
