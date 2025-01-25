@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class Type:
     _type_chart = None
 
@@ -54,13 +55,13 @@ class Type:
         return self.__immunities
 
     @classmethod
-    def _check_for_valid_type(cls, name):
+    def _check_for_valid_type(cls, type_name: str):
         """Verifica se o nome do tipo está presente no type_chart."""
-        if not isinstance(name, str):
-            raise TypeError(f"{name} must be a string")
+        if not isinstance(type_name, str) or not type_name:
+            raise TypeError(f"{type_name} must be a non-empty string")
         
-        if name not in Type._type_chart:
-            raise TypeError(f"{name} is misspelled or is not a valid type.")
+        if type_name not in Type._type_chart:
+            raise TypeError(f"{type_name} is misspelled or is not a valid type.")
 
     @classmethod
     def _get_interactions(cls, name: str, interaction_type: str) -> list[str]:
