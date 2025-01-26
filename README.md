@@ -23,11 +23,11 @@ SomeMON - Pokémon Battle Simulator/
 │   ├── data/
 │   │   └── type_chart.json # JSON file containing the chart of resistances, weaknesses, and immunities
 │   ├── main.py # Edit and run this file to start the battles
-│   └── README.md # Project documentation
-└── tests/
-    ├── test_attack.py # Unit tests for the Attack class
-    ├── test_mon.py # Unit tests for the MON class
-    └── test_type.py # Unit tests for the Type class
+├── tests/
+│   ├── test_attack.py # Unit tests for the Attack class
+│   ├── test_mon.py # Unit tests for the Mon class
+│   └── test_type.py # Unit tests for the Type class
+└── requirements.txt # This file lists the dependencies required for the Python project.
 ```
 
 ## How to Run
@@ -39,13 +39,26 @@ This project requires Python 3.7+.
 1. Clone this repository:
 
     ```bash
-    git clone https://github.com/user/someMON.git
-    cd someMON
-    ```
+    git clone https://github.com/nx23/SomeMON.git
+    cd SomeMON
 
 2. To run the code, execute the following command:
     ```bash
-    python -m src.main
+    python src/main.py
+    ```
+
+### Running Tests
+
+This project uses `pytest` for unit testing. Install the dependencies and run the tests with the following commands:
+
+1. Install the dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+2. Run the tests:
+    ```bash
+    pytest tests
     ```
 
 ## Contributing
