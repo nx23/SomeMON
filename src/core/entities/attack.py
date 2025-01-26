@@ -1,4 +1,4 @@
-from math import floor, prod
+from math import ceil, prod
 import random
 from src.core.entities.type import Type
 from typing import TYPE_CHECKING
@@ -16,7 +16,7 @@ class Attack:
         self.__effect = effect
 
     def __repr__(self) -> str:
-        return f"Attack(name='{self.name}', type='{self.type}', accuracy={self.accuracy}, power={self.power}, attack_status='{self.attack_status}')"
+        return f"Attack(name='{self.name}', type=Type(name='{self.type.name}'), accuracy={self.accuracy}, power={self.power}, attack_status='{self.attack_status}')"
 
     def __str__(self) -> str:
         return f"{self.name} ({self.type.name})"
@@ -76,7 +76,7 @@ class Attack:
         self._check_for_valid_attack_status(attack_status)
         self.__attack_status = attack_status
 
-    def calculate_damage(self, user: "Mon", target: "Mon") -> int:
+    def calculate_damage(self, user: "Mon", target: "Mon"):
         messages = set()
         # Check if the attack hits based on accuracy
         if random.randint(1, 100) > self.accuracy:
@@ -93,20 +93,20 @@ class Attack:
         for target_type in [target.main_type, target.sub_type]:
             if target_type is None:
                 continue
-            if self.type.name in target_type.immunities:
+            if target_type.is_immune_to(self.type):
                 messages.add(f"{self.name} had no effect on {target.main_type}")
                 return 0
-            elif self.type.name in target_type.resistances:
+            elif target_type.is_resistant_to(self.type):
                 messages.add(f"{self.name} was not very effective...")
                 modifiers.append(0.5)
-            elif self.type.name in target_type.weaknesses:
+            elif target_type.is_weak_to(self.type):
                 messages.add(f"{self.name} was super effective!")
                 modifiers.append(2.0)
 
         if self.attack_status == 'atk':
-            base_damage = floor(user.atk / target.df) * self.power
+            base_damage = ceil(user.atk / target.df) * self.power
         elif self.attack_status == 'satk':
-            base_damage = floor(user.satk / target.sdf) * self.power
+            base_damage = ceil(user.satk / target.sdf) * self.power
         else:
             raise ValueError("Invalid attack_status value. Must be 'atk' or 'satk'.")
 
@@ -118,6 +118,8 @@ class Attack:
 
         for message in messages:
             print(message)
+
+        return damage
 
     @classmethod
     def _check_for_valid_name(cls, name):
@@ -133,11 +135,15 @@ class Attack:
     def _check_for_valid_accuracy(cls, accuracy):
         if not isinstance(accuracy, int):
             raise TypeError("accuracy must be an integer")
+        if not (0 <= accuracy <= 100):
+            raise ValueError("accuracy must be between 0 and 100")
 
     @classmethod
     def _check_for_valid_power(cls, power):
         if not isinstance(power, int):
             raise TypeError("power must be an integer")
+        if power < 0:
+            raise ValueError("power must be greater than or equal to 0")
 
     @classmethod
     def _check_for_valid_attack_status(cls, attack_status):

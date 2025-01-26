@@ -6,15 +6,15 @@ from src.core.entities.type import Type
 Type.load_type_chart("type_chart.json")
 
 # Creating some types
-fire = Type("Fire")
-water = Type("Water")
-grass = Type("Grass")
-poison = Type("Poison")
+fire_type = Type("Fire")
+water_type = Type("Water")
+grass_type = Type("Grass")
+poison_type = Type("Poison")
 
 # Creating some attacks
-ember = Attack("Ember", power=40, type=fire, accuracy=10, attack_status="satk")
-water_gun = Attack("Water Gun", power=40, type=water, accuracy=100, attack_status="satk")
-vine_whip = Attack("Vine Whip", power=45, type=grass, accuracy=100, attack_status="satk")
+ember = Attack("Ember", power=40, type=fire_type, accuracy=10, attack_status="satk")
+water_gun = Attack("Water Gun", power=40, type=water_type, accuracy=100, attack_status="satk")
+vine_whip = Attack("Vine Whip", power=45, type=grass_type, accuracy=100, attack_status="satk")
 
 # Creating some Mons
 charmander = Mon(
@@ -25,7 +25,7 @@ charmander = Mon(
     satk=60,
     sdf=50,
     spd=65,
-    main_type=fire,
+    main_type=fire_type,
     attacks=[ember]
 )
 
@@ -37,7 +37,7 @@ squirtle = Mon(
     satk=50,
     sdf=64,
     spd=43,
-    main_type=water,
+    main_type=water_type,
     attacks=[water_gun]
 )
 
@@ -49,8 +49,8 @@ bulbasaur = Mon(
     satk=65,
     sdf=65,
     spd=45,
-    main_type=grass,
-    sub_type=poison,
+    main_type=grass_type,
+    sub_type=poison_type,
     attacks=[vine_whip]
 )
 

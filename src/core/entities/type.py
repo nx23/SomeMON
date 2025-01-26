@@ -5,6 +5,41 @@ from pathlib import Path
 class Type:
     _type_chart = None
 
+    @classmethod
+    def get_type_chart(cls) -> dict[str, dict[str, list[str]]]:
+        if Type._type_chart is None:
+            Type.load_type_chart()
+        return Type._type_chart
+
+    @classmethod
+    def _check_for_valid_type(cls, type_name: str):
+        """Check if the type name is present in the type_chart."""
+        if not isinstance(type_name, str) or not type_name:
+            raise TypeError(f"{type_name} must be a non-empty string")
+        
+        if type_name not in Type._type_chart:
+            raise ValueError(f"{type_name} is misspelled or is not a valid type.")
+
+    @classmethod
+    def _get_interactions(cls, name: str, interaction_type: str) -> list[str]:
+        """Get the interactions (resistances, weaknesses, immunities) from the type_chart"""
+        return cls._type_chart.get(name, {}).get(interaction_type, [])
+
+    @classmethod
+    def load_type_chart(cls, file_name: str = "type_chart.json") -> None:
+        """Load the type_chart from a JSON file and store it as a class attribute"""
+        if cls._type_chart is None:  # Ensure that the type_chart is loaded only once
+            project_root = Path(__file__).resolve().parents[3]  # Project root directory
+            file_path = project_root / 'src' / 'data' / file_name
+            
+            try:
+                with file_path.open("r") as f:
+                    cls._type_chart = json.load(f)
+            except FileNotFoundError:
+                raise FileNotFoundError(f"The file {file_name} does not exist at {file_path}.")
+            except IOError as e:
+                raise IOError(f"An error occurred while trying to read the file {file_name}: {e}")
+
     def __init__(self, name: str):
         self.__name = name
 
@@ -54,53 +89,11 @@ class Type:
     def immunities(self) -> tuple[str]:
         return self.__immunities
 
-    @classmethod
-    def _check_for_valid_type(cls, type_name: str):
-        """Check if the type name is present in the type_chart."""
-        if not isinstance(type_name, str) or not type_name:
-            raise TypeError(f"{type_name} must be a non-empty string")
-        
-        if type_name not in Type._type_chart:
-            raise TypeError(f"{type_name} is misspelled or is not a valid type.")
+    def is_weak_to(self, other_type):
+        return other_type in self.weaknesses
 
-    @classmethod
-    def _get_interactions(cls, name: str, interaction_type: str) -> list[str]:
-        """Get the interactions (resistances, weaknesses, immunities) from the type_chart"""
-        return cls._type_chart.get(name, {}).get(interaction_type, [])
+    def is_resistant_to(self, other_type):
+        return other_type in self.resistances
 
-    @classmethod
-    def load_type_chart(cls, file_name: str = "type_chart.json") -> None:
-        """Load the type_chart from a JSON file and store it as a class attribute"""
-        if cls._type_chart is None:  # Ensure that the type_chart is loaded only once
-            project_root = Path(__file__).resolve().parents[3]  # Project root directory
-            file_path = project_root / 'src' / 'data' / file_name
-            
-            try:
-                with file_path.open("r") as f:
-                    cls._type_chart = json.load(f)
-            except FileNotFoundError:
-                raise FileNotFoundError(f"The file {file_name} does not exist at {file_path}.")
-            except IOError as e:
-                raise IOError(f"An error occurred while trying to read the file {file_name}: {e}")
-
-
-if __name__ == "__main__":
-    # Loading the type_chart once (shared by all instances)
-    Type.load_type_chart("type_chart.json")
-
-    # Creating instances of types (both Pokémon and Attacks)
-    fire = Type("Fire")
-    water = Type("Water")
-
-    # Accessing resistances, weaknesses, and immunities
-    print(f"Resistances of Fire: {fire.resistances}")
-    print(f"Weaknesses of Fire: {fire.weaknesses}")
-    print(f"Immunities of Fire: {fire.immunities}")
-
-    print(f"Resistances of Water: {water.resistances}")
-    print(f"Weaknesses of Water: {water.weaknesses}")
-    print(f"Immunities of Water: {water.immunities}")
-
-    # Example of comparison
-    print(f"Fire == Water? {fire == water}")
-    print(f"Fire in set? {'Fire' in {fire}}")
+    def is_immune_to(self, other_type):
+        return other_type in self.immunities

@@ -16,7 +16,10 @@ class Mon:
         self.__name = name or species
         self.__species = species
         self.__stats = {}
+        self._check_valid_type(main_type.name)
         self.__main_type = main_type
+        if sub_type is not None:
+            self._check_valid_type(sub_type.name)
         self.__sub_type = sub_type
         self.__attacks = []
 
@@ -163,6 +166,7 @@ class Mon:
 
 
     def _check_valid_type(self, type_name: str):
+        from src.core.entities.type import Type
         Type._check_for_valid_type(type_name)
 
     def _check_for_valid_stat(self, stat: int, name: str):
@@ -172,14 +176,12 @@ class Mon:
             raise ValueError(f"{name} must be between {Mon.MIN_STAT} and {Mon.MAX_STAT}")
         
     def _check_for_valid_attack(self, attack: Attack):
-        if not TYPE_CHECKING:
-            from src.core.entities.attack import Attack
+        from src.core.entities.attack import Attack
         if not isinstance(attack, Attack):
             raise TypeError("Attack must be an instance of the Attack class")
         
     def add_attack(self, attack: Attack):
-        if not TYPE_CHECKING:
-            from src.core.entities.attack import Attack
+        from src.core.entities.attack import Attack
         if attack in self.__attacks:
             raise ValueError(f"Attack '{attack.name}' is already added to {self.name}")
         if len(self.__attacks) >= Mon.MAX_ATTACKS:

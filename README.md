@@ -14,16 +14,20 @@ SomeMON is a battle simulator inspired by Pokémon, allowing you to create and i
 This project is structured as follows:
 ```
 SomeMON - Pokémon Battle Simulator/
-└─ src/
-    ├─ core/
-    │  └── entities/
-    │     ├── attack.py # Definition of the Attack class, with combat mechanics
-    │     ├── mon.py # Definition of the MON class that will have the interaction mechanics
-    │     └── type.py # Definition of the Type class, containing the types of attacks and Pokémon 
-    ├─ data/
-    │  └── type_chart.json # JSON file containing the chart of resistances, weaknesses, and immunities
-    ├─ main.py # Edit and run this file to start the battles
-    └── README.md # Project documentation
+├── src/
+│   ├── core/
+│   │   └── entities/
+│   │       ├── attack.py # Definition of the Attack class, with combat mechanics
+│   │       ├── mon.py # Definition of the MON class that will have the interaction mechanics
+│   │       └── type.py # Definition of the Type class, containing the types of attacks and Pokémon 
+│   ├── data/
+│   │   └── type_chart.json # JSON file containing the chart of resistances, weaknesses, and immunities
+│   ├── main.py # Edit and run this file to start the battles
+│   └── README.md # Project documentation
+└── tests/
+    ├── test_attack.py # Unit tests for the Attack class
+    ├── test_mon.py # Unit tests for the MON class
+    └── test_type.py # Unit tests for the Type class
 ```
 
 ## How to Run
